@@ -64,12 +64,16 @@ fields:
 ---
 code:  |
   has_lawyer
-  if has_lawyer:
+  if has_lawyer == True:
     active_lawyer
   else:
     cant_afford_lawyer
-  if cant_afford_lawyer and not not_in_alberta:
+  if is_criminal_matter or is_family_matter:
+    eligible_matter = True
+  if cant_afford_lawyer and eligible_matter and not is_appeal and not not_in_alberta:
     eligible = True
+  else:
+    eligible = False
 ---
 question: Thank you, ${ user }.
 subquestion:  |
