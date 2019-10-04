@@ -1,0 +1,87 @@
+---
+modules:
+  - docassemble.base.core
+  - docassemble.base.util
+---
+objects:
+  - user: Individual
+  - family: DAList.using(object_type=Individual, ask_number=True)
+---
+question:  |
+  What is your name?
+fields: 
+  - First Name: user.name.first
+  - Last Name: user.name.last
+---
+need: user.name.first
+question:  |
+  Do you already have a lawyer?
+yesno: has_lawyer
+mandatory: true
+---
+question:  |
+  Is your lawyer still acting on your behalf?
+yesno: active_lawyer
+---
+question:  |
+  Can you afford a lawyer?
+noyes: cant_afford_lawyer
+---
+question:  |  
+  Is your legal matter located in Alberta?
+yesno: matter_in_alberta
+---
+question:  |  
+  Is this legal matter a family law matter?
+yesno: is_family_matter
+---
+question:  |  
+  Is this legal matter a criminal law matter?
+yesno: is_criminal_matter
+---
+question:  |  
+  Do you live in Alberta?
+noyes: not_in_alberta
+---
+question:  |  
+  Is this an appeal of a matter for which you have received LAA assistance?
+yesno: is_appeal
+---
+question:  |  
+  Do you have any family members?
+yesno: family.there_is_another
+---
+question: How many family members do you have? 
+fields:
+  - number: family.target_number
+    datatype: number
+    min: 0
+---  
+question: Information about the ${ ordinal(i) } family member.
+fields:
+  - First Name: family[i].name.first
+  - Last Name: family[i].name.last
+---
+code:  |
+  has_lawyer
+  if has_lawyer:
+    active_lawyer
+  else:
+    cant_afford_lawyer
+  if cant_afford_lawyer and not not_in_alberta:
+    eligible = True
+---
+question: Thank you, ${ user }.
+subquestion:  |
+  Here is your document.
+attachment: 
+  name: Legal Aid Services Application
+  filename: Legal_Aid_Application
+  docx template file: legal_aid_template2.docx
+  valid formats:
+    - pdf
+    - docx
+buttons:
+  - Exit: exit
+mandatory: true
+---
