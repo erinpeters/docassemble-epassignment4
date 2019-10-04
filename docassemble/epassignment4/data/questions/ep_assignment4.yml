@@ -17,12 +17,15 @@ need: user.name.first
 question:  |
   Do you already have a lawyer?
 yesno: has_lawyer
-mandatory: true
 ---
+if:  |
+  has_lawyer == True
 question:  |
   Is your lawyer still acting on your behalf?
 yesno: active_lawyer
 ---
+if:  |
+  (has_lawyer == False) or (active_lawyer == False)
 question:  |
   Can you afford a lawyer?
 noyes: cant_afford_lawyer
@@ -51,7 +54,7 @@ question:  |
   Do you have any family members?
 yesno: family.there_is_another
 ---
-question: How many family members do you have? 
+question: How many family members do you have, ${ user.name.first }? 
 fields:
   - number: family.target_number
     datatype: number
@@ -63,11 +66,10 @@ fields:
   - Last Name: family[i].name.last
 ---
 code:  |
-  has_lawyer
-  if has_lawyer == True:
-    active_lawyer
-  else:
-    cant_afford_lawyer
+  if has_lawyer == False:
+    active_lawyer = False
+  if active_lawyer:
+    cant_afford_lawyer = False
   if is_criminal_matter or is_family_matter:
     eligible_matter = True
   if cant_afford_lawyer and eligible_matter and not is_appeal and not not_in_alberta:
